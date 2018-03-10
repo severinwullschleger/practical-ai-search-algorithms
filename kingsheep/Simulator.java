@@ -14,11 +14,11 @@ public class Simulator {
     private static final int FONTSIZE = 14;
 
     /** Maximum number of nanoseconds a player is allowed to think. */
-    private static final int THINKLIMIT = 1000;
+    private static final int THINKLIMIT = 1000;  //1000
 
     /** Minimum time to wait between player turns (even if a player used
         less time to think). */
-    private static final int WAITMIN = 1000;
+    private static final int WAITMIN = 200; //30
 
     /** Number of turns for one game. */
     private static final int TURNS = 100;

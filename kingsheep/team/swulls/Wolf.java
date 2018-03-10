@@ -10,9 +10,12 @@ public class Wolf extends SwullsCreature {
 
     protected void think(Type map[][]) {
 
-        try {
-            Thread.sleep(1);
-        } catch (InterruptedException ie) { }
+        if(alive){
+            move = getMove(map, getObjectives());
+        }else {
+            move = Move.WAIT;
+        }
+
 
         /*
 		TODO
@@ -30,6 +33,32 @@ public class Wolf extends SwullsCreature {
         move = Move.RIGHT;
         move = Move.WAIT;
 		*/
-        move = Move.WAIT;
+    }
+
+//    private Move getMove() {
+//        fringe = new LinkedList<Square>();
+//        fringe.push(getCurrentSquare(this));
+//
+//        while (fringe.size() > 0) {
+//
+//            Square s = getLowestCostSquare(fringe);
+//            fringe.remove(s);
+//            if (s.type.equals(objectives[0]))
+//                return s.getNextMoveToGetHere();
+//
+//            map.addAvailableNeighborSquaresToTheFringe(s);
+//        }
+//
+//        return getMove(map, );
+//    }
+
+    protected char[] getObjectives() {
+        char[] objectives = new char[1];
+        if (type.equals(Type.getType('2')))
+            objectives[0] = '3';
+        else
+            objectives[0] = '1';
+
+        return objectives;
     }
 }
