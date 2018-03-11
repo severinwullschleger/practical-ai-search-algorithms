@@ -4,9 +4,7 @@ import kingsheep.Creature;
 import kingsheep.Simulator;
 import kingsheep.Type;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * Created by kama on 01.03.16.
@@ -53,17 +51,19 @@ public abstract class SwullsCreature extends Creature {
         System.out.println("-------------------");
     }
 
-    protected String findObjective(Type[] objectives) {
-        Type objective = objectives[0];
+    abstract protected char[] getObjectives();
 
+    protected List<String> findObjectives(Type[] objectives) {
+        List<Type> objectiveList = Arrays.asList(objectives);
+        List<String> objectivePositions = new ArrayList<String>();
         for (int iy = 0; iy < map.length; iy++) {
             for (int ix = 0; ix < map.length; ix++) {
-                if (map[iy][ix].equals(objective)) {
-                    return iy + "_" + ix;
+                if (objectiveList.contains(map[iy][ix])) {
+                    objectivePositions.add(iy + "_" + ix);
                 }
             }
         }
-        return null;
+        return objectivePositions;
     }
 
     class Square {
@@ -139,7 +139,10 @@ public abstract class SwullsCreature extends Creature {
                 squareQueue.addAll(squareQueueToAdd);
                 squareQueueToAdd = new ArrayList<Square>();
             }
-            return successMove;
+            if (successMove != null)
+                return successMove;
+            else
+                return Move.WAIT;
         }
 
         private int getTotalEstimatedCosts() {
@@ -154,19 +157,44 @@ public abstract class SwullsCreature extends Creature {
         }
 
         private int getEstimatedCosts() {
-            String objectivePosition = findObjective(objective);
-            String squarePos = y + "_" + x;
-            return estimateCostsBetween(squarePos, objectivePosition);
+            List<String> objectivePositions = findObjectives(objective);
+            if (objectivePositions.size() > 0) {
+                String squarePos = y + "_" + x;
+                return estimateCostsBetween(squarePos, objectivePositions);
+            }
+            else
+                return 10000000;
+
+//            String objectivePosition = findObjective(objective);
+//            if (objectivePosition != null) {
+//                String squarePos = y + "_" + x;
+//                return estimateCostsBetween(squarePos, objectivePosition);
+//            }
+//            else
+//                return 10000000;
         }
 
-        private int estimateCostsBetween(String squarePos, String objectivePos) {
+        private int estimateCostsBetween(String squarePos, List<String> objectivePos) {
+            ArrayList<Integer> distances = new ArrayList<Integer>(objectivePos.size());
             String[] squarePositions = squarePos.split("_");
-            String[] objectivePositions = objectivePos.split("_");
 
-            int yDistance = Math.abs(Integer.valueOf(squarePositions[0]) - Integer.valueOf(objectivePositions[0]));
-            int xDistance = Math.abs(Integer.valueOf(squarePositions[1]) - Integer.valueOf(objectivePositions[1]));
-            return yDistance + xDistance;
+            for (String op : objectivePos) {
+                String[] objectivePositions = op.split("_");
+                int yDistance = Math.abs(Integer.valueOf(squarePositions[0]) - Integer.valueOf(objectivePositions[0]));
+                int xDistance = Math.abs(Integer.valueOf(squarePositions[1]) - Integer.valueOf(objectivePositions[1]));
+                distances.add(yDistance + xDistance);
+            }
+            return Collections.min(distances);
         }
+
+//        private int estimateCostsBetween(String squarePos, String objectivePos) {
+//            String[] squarePositions = squarePos.split("_");
+//            String[] objectivePositions = objectivePos.split("_");
+//
+//            int yDistance = Math.abs(Integer.valueOf(squarePositions[0]) - Integer.valueOf(objectivePositions[0]));
+//            int xDistance = Math.abs(Integer.valueOf(squarePositions[1]) - Integer.valueOf(objectivePositions[1]));
+//            return yDistance + xDistance;
+//        }
 
         protected Move processSquareInQueue() {
             if (isSquareContainingObjective()) {
