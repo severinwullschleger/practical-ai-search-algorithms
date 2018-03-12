@@ -59,7 +59,12 @@ public abstract class SwullsCreature extends Creature {
         for (int iy = 0; iy < map.length; iy++) {
             for (int ix = 0; ix < map.length; ix++) {
                 if (objectiveList.contains(map[iy][ix])) {
-                    objectivePositions.add(iy + "_" + ix);
+                    if (map[iy][ix].equals(Type.GRASS))
+                        objectivePositions.add(iy + "_" + ix + "_" + 1);
+                    else if (map[iy][ix].equals(Type.RHUBARB))
+                        objectivePositions.add(iy + "_" + ix + "_" + 5);
+                    else
+                        objectivePositions.add(iy + "_" + ix + "_" + 0);
                 }
             }
         }
@@ -161,8 +166,7 @@ public abstract class SwullsCreature extends Creature {
             if (objectivePositions.size() > 0) {
                 String squarePos = y + "_" + x;
                 return estimateCostsBetween(squarePos, objectivePositions);
-            }
-            else
+            } else
                 return 10000000;
 
 //            String objectivePosition = findObjective(objective);
@@ -182,19 +186,11 @@ public abstract class SwullsCreature extends Creature {
                 String[] objectivePositions = op.split("_");
                 int yDistance = Math.abs(Integer.valueOf(squarePositions[0]) - Integer.valueOf(objectivePositions[0]));
                 int xDistance = Math.abs(Integer.valueOf(squarePositions[1]) - Integer.valueOf(objectivePositions[1]));
-                distances.add(yDistance + xDistance);
+                int reward = Integer.valueOf(objectivePositions[2]);
+                distances.add(yDistance + xDistance - reward);
             }
             return Collections.min(distances);
         }
-
-//        private int estimateCostsBetween(String squarePos, String objectivePos) {
-//            String[] squarePositions = squarePos.split("_");
-//            String[] objectivePositions = objectivePos.split("_");
-//
-//            int yDistance = Math.abs(Integer.valueOf(squarePositions[0]) - Integer.valueOf(objectivePositions[0]));
-//            int xDistance = Math.abs(Integer.valueOf(squarePositions[1]) - Integer.valueOf(objectivePositions[1]));
-//            return yDistance + xDistance;
-//        }
 
         protected Move processSquareInQueue() {
             if (isSquareContainingObjective()) {
@@ -252,9 +248,13 @@ public abstract class SwullsCreature extends Creature {
         }
 
         private boolean isSquareVisitable() {
-            if (type == Type.FENCE) {
+            if (type == Type.FENCE)
                 return false;
-            }
+
+            //Square not visitable if its close (one after root/source) and wolf stands on it
+            if (gotHereFrom.gotHereFrom == null && (type == Type.WOLF1 || type == Type.WOLF2  ))
+                                                    //|| type == Type.SHEEP1 || type == Type.SHEEP2 ))
+                return false;
 
             if (visitedSquares.get(getStringCoordinate()) != null) {
                 return false;
