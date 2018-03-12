@@ -20,7 +20,7 @@ public class Wolf extends SwullsCreature {
 
     protected char[] getObjectives() {
         char[] objectives = new char[1];
-        if (type.equals(Type.getType('2')))
+        if (type.equals(Type.WOLF1))
             objectives[0] = '3';
         else
             objectives[0] = '1';
