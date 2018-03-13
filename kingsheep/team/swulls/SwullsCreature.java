@@ -16,6 +16,7 @@ public abstract class SwullsCreature extends Creature {
     private ArrayList<Square> squareQueueToAdd;
     private Type map[][];
     protected Type objective[];
+    protected int counter;
 
 
     public SwullsCreature(Type type, Simulator parent, int playerID, int x, int y) {
@@ -71,15 +72,24 @@ public abstract class SwullsCreature extends Creature {
         return objectivePositions;
     }
 
+    protected boolean isCoordinateValid(Type map[][], int y, int x){
+        try{
+            Type type = map[y][x];
+        }catch (ArrayIndexOutOfBoundsException e){
+            return false;
+        }
+        return true;
+    }
+
     class Square {
-        Type type;
+        Type squareType;
         private int x, y;
         private Type objective[];
         private Move howToGetHere;
         private Square gotHereFrom;
 
-        protected Square(Type type, int x, int y, Type objective[], Move howToGetHere, Square gotHereFrom) {
-            this.type = type;
+        protected Square(Type squareType, int x, int y, Type objective[], Move howToGetHere, Square gotHereFrom) {
+            this.squareType = squareType;
             this.x = x;
             this.y = y;
             this.objective = objective;
@@ -248,13 +258,27 @@ public abstract class SwullsCreature extends Creature {
         }
 
         private boolean isSquareVisitable() {
-            if (type == Type.FENCE)
+            if (squareType == Type.FENCE)
                 return false;
 
             //Square not visitable if its close (one after root/source) and wolf stands on it
-            if (gotHereFrom.gotHereFrom == null && (type == Type.WOLF1 || type == Type.WOLF2  ))
-                                                    //|| type == Type.SHEEP1 || type == Type.SHEEP2 ))
+            if (gotHereFrom.gotHereFrom == null && (squareType == Type.WOLF1 || squareType == Type.WOLF2  ))
                 return false;
+
+            //check if a potential field is dangerous
+            if ((type == Type.SHEEP2 || type == Type.SHEEP1)) {
+                //if sheeps second step
+                if (counter % 2 == 0){
+                    if (gotHereFrom.gotHereFrom == null)
+                        if (!isSquareSafe())
+                            return false;
+                }else {
+                    if (gotHereFrom.gotHereFrom != null && gotHereFrom.gotHereFrom.gotHereFrom == null)
+                        if (!isSquareSafe())
+                            return false;
+                }
+            }
+
 
             if (visitedSquares.get(getStringCoordinate()) != null) {
                 return false;
@@ -263,9 +287,31 @@ public abstract class SwullsCreature extends Creature {
             return true;
         }
 
+        private boolean isSquareSafe() {
+            ArrayList<Type> surroundingSquares = new ArrayList<Type>(4);
+            if (isCoordinateValid(map, y-1, x)) surroundingSquares.add(map[y-1][x]);
+            if (isCoordinateValid(map, y+1, x)) surroundingSquares.add(map[y+1][x]);
+            if (isCoordinateValid(map, y, x-1)) surroundingSquares.add(map[y][x-1]);
+            if (isCoordinateValid(map, y, x+1)) surroundingSquares.add(map[y][x+1]);
+
+            if (type == Type.SHEEP1 && surroundingSquares.contains(Type.WOLF2))
+                return false;
+            if (type == Type.SHEEP2 && surroundingSquares.contains(Type.WOLF1))
+                return false;
+
+            //handle bug if opponent wolf didnt move yet. (swap from P2 to P1)
+            if (counter <= 2
+                && (type == Type.SHEEP1 || type == Type.SHEEP2)
+                && (surroundingSquares.contains(Type.WOLF1)
+                    || surroundingSquares.contains(Type.WOLF2)) )
+                return false;
+
+            return true;
+        }
+
         private boolean isSquareContainingObjective() {
             for (int i = 0; i < objective.length; i++) {
-                if (type == objective[i]) {
+                if (squareType == objective[i]) {
                     return true;
                 }
             }
