@@ -14,7 +14,7 @@ public class Simulator {
     private static final int FONTSIZE = 14;
 
     /** Maximum number of nanoseconds a player is allowed to think. */
-    private static final int THINKLIMIT = 1000;
+    private static final int THINKLIMIT = 1000;//2000000000;//1000;
 
     /** Minimum time to wait between player turns (even if a player used
         less time to think). */
@@ -59,14 +59,14 @@ public class Simulator {
     Simulator(String mapName, String team1, String team2) {
 
         try {
-            // Makes sure the student is always player 1 when playing against predefined agents
-            if (team1.equals("awesome") || team1.equals("greedy")) {
-                p[0] = loadTeam(team1, new Color(222, 0, 0), 2);
-                p[1] = loadTeam(team2, new Color(0, 0, 222), 1);
-            } else {
+//            // Makes sure the student is always player 1 when playing against predefined agents
+//            if (team1.equals("awesome") || team1.equals("greedy")) {
+//                p[0] = loadTeam(team2, new Color(222, 0, 0), 1);
+//                p[1] = loadTeam(team1, new Color(0, 0, 222), 2);
+//            } else {
                 p[0] = loadTeam(team1, new Color(222, 0, 0), 1);
                 p[1] = loadTeam(team2, new Color(0, 0, 222), 2);
-            }
+//            }
         } catch (Exception cnfe) {
             System.out.println(cnfe.getMessage());
             cnfe.printStackTrace();
