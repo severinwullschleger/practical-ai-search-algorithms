@@ -103,8 +103,8 @@ public abstract class SwullsCreature extends Creature {
                     return getMoveToFarAwayObjective();
             }
 
-//            if (maxValueMove == null)
-//                return Move.WAIT;
+            if (maxValueMove == null)
+                return Move.WAIT;
 
             return maxValueMove;
         }
@@ -209,8 +209,9 @@ public abstract class SwullsCreature extends Creature {
             if ( gotHereFrom.gotHereFrom == null
                     && ( squareType == Type.WOLF1
                         || squareType == Type.WOLF2
-                        || (type.equals(Type.SHEEP1) && squareType.equals(Type.SHEEP2))
-                        || (type.equals(Type.SHEEP2) && squareType.equals(Type.SHEEP1)) ) )
+                        || squareType.equals(Type.SHEEP2) ) )
+//                        || (type.equals(Type.SHEEP1) && squareType.equals(Type.SHEEP2))
+//                        || (type.equals(Type.SHEEP2) && squareType.equals(Type.SHEEP1)) ) )
                 return false;
 
             //check if a potential field is dangerous

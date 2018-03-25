@@ -47,11 +47,11 @@ public class Sheep extends SwullsCreature {
         if (surroundingSquares.contains(opponentWolf))
             return false;
 
-        //handle bug if opponent wolf didnt move yet. (swap from P2 to P1)
-        if (counter <= 2
-                && (surroundingSquares.contains(Type.WOLF1)
-                    || surroundingSquares.contains(Type.WOLF2)))
-            return false;
+//        //handle bug if opponent wolf didnt move yet. (swap from P2 to P1)
+//        if (counter <= 2
+//                && (surroundingSquares.contains(Type.WOLF1)
+//                    || surroundingSquares.contains(Type.WOLF2)))
+//            return false;
 
         return true;
     }
