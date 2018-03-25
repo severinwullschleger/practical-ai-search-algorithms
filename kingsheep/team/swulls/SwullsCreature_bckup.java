@@ -132,4 +132,26 @@ public abstract class SwullsCreature_bckup extends Creature {
             }
         }
     }
+
+    private Move getSecureMove(Type[][] map) {
+        Move move = Move.WAIT;
+
+        if ( (type.equals(Type.SHEEP1) && map[y-1][x].equals(Type.WOLF2))
+                || (type.equals(Type.SHEEP2) && map[y-1][x].equals(Type.WOLF1)) )
+            move = Move.DOWN;
+
+        if ( (type.equals(Type.SHEEP1) && map[y+1][x].equals(Type.WOLF2))
+                || (type.equals(Type.SHEEP2) && map[y+1][x].equals(Type.WOLF1)) )
+            move = Move.UP;
+
+        if ( (type.equals(Type.SHEEP1) && map[y][x-1].equals(Type.WOLF2))
+                || (type.equals(Type.SHEEP2) && map[y][x-1].equals(Type.WOLF1)) )
+            move = Move.RIGHT;
+
+        if ( (type.equals(Type.SHEEP1) && map[y][x+1].equals(Type.WOLF2))
+                || (type.equals(Type.SHEEP2) && map[y][x+1].equals(Type.WOLF1)) )
+            move = Move.LEFT;
+
+        return move;
+    }
 }

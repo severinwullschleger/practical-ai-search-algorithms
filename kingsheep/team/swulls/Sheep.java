@@ -2,14 +2,19 @@ package kingsheep.team.swulls;
 
 import kingsheep.*;
 
-public class Sheep extends SwullsCreature {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-    private boolean noMoreFoodAvailable = false;
-    private Move lastMove;
+public class Sheep extends SwullsCreature {
 
     public Sheep(Type type, Simulator parent, int playerID, int x, int y) {
         super(type, parent, playerID, x, y);
         counter = 0;
+//        if (type.equals(Type.SHEEP2))
+//            opponentWolf = Type.WOLF1;
+//        else
+            opponentWolf = Type.WOLF2;
     }
 
     @Override
@@ -17,22 +22,10 @@ public class Sheep extends SwullsCreature {
 
         counter++;
 
-        if(alive && !noMoreFoodAvailable){
-
+        if (alive) {
             move = getMove(map, getObjectives());
-            if (move == null){
-                move = Move.WAIT;
-            }
-
-            if(move == Move.WAIT){
-                noMoreFoodAvailable = true;
-                fleeFromBadWolf(map);
-            }
-        }else{
-            //focusing on escaping the wolf
-            fleeFromBadWolf(map);
         }
-        lastMove = move;
+
     }
 
     @Override
@@ -43,57 +36,44 @@ public class Sheep extends SwullsCreature {
         return objectives;
     }
 
-    private void fleeFromBadWolf(Type map[][]){
+    @Override
+    protected boolean isSquareSafe(int x, int y) {
+        ArrayList<Type> surroundingSquares = new ArrayList<Type>(4);
+        if (isCoordinateValid(map, y - 1, x)) surroundingSquares.add(map[y - 1][x]);
+        if (isCoordinateValid(map, y + 1, x)) surroundingSquares.add(map[y + 1][x]);
+        if (isCoordinateValid(map, y, x - 1)) surroundingSquares.add(map[y][x - 1]);
+        if (isCoordinateValid(map, y, x + 1)) surroundingSquares.add(map[y][x + 1]);
 
-        if (isSquareSafe(map, lastMove)){
-            move = lastMove;
-            return;
-        }
+        if (surroundingSquares.contains(opponentWolf))
+            return false;
 
-        if (isSquareSafe(map, Move.DOWN)){
-            move = Move.DOWN;
-        }else if (isSquareSafe(map, Move.RIGHT)){
-            move = Move.RIGHT;
-        }else if (isSquareSafe(map, Move.UP)){
-            move = Move.UP;
-        }else{
-            move = Move.LEFT;
-        }
+        //handle bug if opponent wolf didnt move yet. (swap from P2 to P1)
+        if (counter <= 2
+                && (surroundingSquares.contains(Type.WOLF1)
+                    || surroundingSquares.contains(Type.WOLF2)))
+            return false;
+
+        return true;
     }
 
-    private boolean isSquareSafe(Type map[][], Move move){
-        int x, y;
-
-        if (move == Move.UP){
-            x = this.x;
-            y = this.y - 1;
-        }else if (move == Move.DOWN){
-            x = this.x;
-            y = this.y + 1;
-        }else if (move == Move.LEFT){
-            x = this.x - 1;
-            y = this.y;
-        }else if (move == Move.RIGHT) {
-            x = this.x + 1;
-            y = this.y;
-        }else {
-            x = this.x;
-            y = this.y;
+    @Override
+    protected List<String> findObjectives() {
+        List<Type> objectiveList = Arrays.asList(objectives);
+        List<String> objectivePositions = new ArrayList<String>();
+        for (int iy = 0; iy < map.length; iy++) {
+            for (int ix = 0; ix < map[iy].length; ix++) {
+                if (objectiveList.contains(map[iy][ix])) {
+                    if (map[iy][ix].equals(Type.GRASS))
+                        objectivePositions.add(iy + "_" + ix + "_" + 1);
+                    else if (map[iy][ix].equals(Type.RHUBARB))
+                        objectivePositions.add(iy + "_" + ix + "_" + 5);
+                    else
+                        objectivePositions.add(iy + "_" + ix + "_" + 0);
+                }
+            }
         }
-
-        if (!isCoordinateValid(map, y, x)){
-            return false;
-        }
-
-        Type type = map[y][x];
-
-        if(type == Type.FENCE )//|| type == Type.WOLF2 || type == Type.SHEEP2)
-            return false;
-        else if (this.type == Type.SHEEP1 && type == Type.WOLF2)
-            return false;
-        else if (this.type == Type.SHEEP2 && type == Type.WOLF1)
-            return false;
-        else
-            return true;
+        return objectivePositions;
     }
+
+
 }

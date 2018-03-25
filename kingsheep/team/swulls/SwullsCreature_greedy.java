@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * Created by kama on 01.03.16.
  */
-public abstract class SwullsCreature_maxCosts extends Creature {
+public abstract class SwullsCreature_greedy extends Creature {
 
     private HashMap<String, Square> visitedSquares;
     private ArrayList<Square> squareQueue;
@@ -19,7 +19,7 @@ public abstract class SwullsCreature_maxCosts extends Creature {
     protected int counter;
 
 
-    public SwullsCreature_maxCosts(Type type, Simulator parent, int playerID, int x, int y) {
+    public SwullsCreature_greedy(Type type, Simulator parent, int playerID, int x, int y) {
         super(type, parent, playerID, x, y);
     }
 
@@ -60,12 +60,12 @@ public abstract class SwullsCreature_maxCosts extends Creature {
         for (int iy = 0; iy < map.length; iy++) {
             for (int ix = 0; ix < map.length; ix++) {
                 if (objectiveList.contains(map[iy][ix])) {
-                        if (map[iy][ix].equals(Type.GRASS))
-                            objectivePositions.add(iy + "_" + ix + "_" + 1);
-                        else if (map[iy][ix].equals(Type.RHUBARB))
-                            objectivePositions.add(iy + "_" + ix + "_" + 5);
-                        else
-                            objectivePositions.add(iy + "_" + ix + "_" + 0);
+                    if (map[iy][ix].equals(Type.GRASS))
+                        objectivePositions.add(iy + "_" + ix + "_" + 1);
+                    else if (map[iy][ix].equals(Type.RHUBARB))
+                        objectivePositions.add(iy + "_" + ix + "_" + 5);
+                    else
+                        objectivePositions.add(iy + "_" + ix + "_" + 0);
                 }
             }
         }
@@ -115,6 +115,8 @@ public abstract class SwullsCreature_maxCosts extends Creature {
                 squareQueue = squareQueueToAdd;
                 squareQueueToAdd = new ArrayList<Square>();
             }
+
+
             return Move.WAIT;
         }
 
@@ -123,17 +125,18 @@ public abstract class SwullsCreature_maxCosts extends Creature {
             visitedSquares.put(this.getStringCoordinate(), this);
 
             Move successMove = null;
-            int lowestCostsOverall = 1000000000;
+            boolean isFirstCalculation = true;
+            int lowestCostsOverall = 0;
 
             // always calculate till fringe is empty
             while (squareQueue.size() > 0) {
 
-                int lowestCosts = squareQueue.get(0).getCosts();
+                int lowestCosts = squareQueue.get(0).getTotalEstimatedCosts();
                 Square lowestCostSquare = squareQueue.get(0);
 
                 for (int i = 1; i < squareQueue.size(); i++) {
                     Square square = squareQueue.get(i);
-                    int costs = squareQueue.get(i).getCosts();
+                    int costs = squareQueue.get(i).getTotalEstimatedCosts();
                     if (costs < lowestCosts) {
                         lowestCostSquare = square;
                         lowestCosts = costs;
@@ -142,9 +145,10 @@ public abstract class SwullsCreature_maxCosts extends Creature {
                 squareQueue.remove(lowestCostSquare);
                 Move move = lowestCostSquare.processSquareInQueue();
 
-                if (successMove == null || lowestCosts < lowestCostsOverall) {
+                if (successMove == null || isFirstCalculation || lowestCosts < lowestCostsOverall) {
                     successMove = move;
                     lowestCostsOverall = lowestCosts;
+                    isFirstCalculation = false;
                 }
 
                 squareQueue.addAll(squareQueueToAdd);
@@ -156,20 +160,15 @@ public abstract class SwullsCreature_maxCosts extends Creature {
                 return Move.WAIT;
         }
 
-        private int getCosts() {
+        private int getTotalEstimatedCosts() {
+            return getRealCosts() + getEstimatedCosts();
+        }
+
+        private int getRealCosts() {
             if (gotHereFrom == null) {
                 return 0;
             }
-            if (type == Type.WOLF1 || type == Type.WOLF2) {
-                return 1 + gotHereFrom.getCosts();
-            }else {
-                if (squareType == Type.RHUBARB)
-                    return 1 - 5 + gotHereFrom.getCosts();
-                else if (squareType == Type.GRASS)
-                    return 1 - 1 + gotHereFrom.getCosts();
-                else
-                    return 1 + gotHereFrom.getCosts();
-            }
+            return 1 + gotHereFrom.getRealCosts();
         }
 
         private int getEstimatedCosts() {
@@ -180,7 +179,7 @@ public abstract class SwullsCreature_maxCosts extends Creature {
             } else
                 return 10000000;
 
-//            String objectivePosition = findObjective(objective);
+//            String objectivePosition = findObjective(objectives);
 //            if (objectivePosition != null) {
 //                String squarePos = y + "_" + x;
 //                return estimateCostsBetween(squarePos, objectivePosition);
