@@ -33,7 +33,7 @@ public abstract class SwullsCreature extends Creature {
     protected Move getMove(Type map[][], char[] objective) {
         visitedSquares = new HashMap<String, Square>();
         squareQueue = new ArrayList<Square>();
-        cutOffDepth = 7;
+        cutOffDepth = 8;
         findingObjectiveMode = false;
 
         this.map = map;
