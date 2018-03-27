@@ -206,14 +206,20 @@ public abstract class UzhShortNameCreature extends Creature {
             }
 
             //Square not visitable if its close (one after root/source) and wolf stands on it
-            if ( gotHereFrom.gotHereFrom == null
-                    && ( type == Type.SHEEP1 )
-                    && ( squareType == Type.WOLF1 || squareType == Type.SHEEP2 ) )
-                return false;
-            if ( gotHereFrom.gotHereFrom == null
-                    && ( type == Type.WOLF1 )
-                    && ( squareType == Type.SHEEP1 || squareType == Type.WOLF2 ) )
-                return false;
+            if ( gotHereFrom.gotHereFrom == null ) {
+                if ( (type == Type.SHEEP1 || type == Type.SHEEP2)
+                        && (squareType == Type.WOLF1 || squareType == Type.SHEEP2 || squareType == Type.WOLF2) )
+                    return false;
+                if ( (type == Type.WOLF1 || type == Type.WOLF2)
+                        && (squareType == Type.WOLF2 || squareType == Type.SHEEP1) )
+                    return false;
+//                if ( type == Type.SHEEP2
+//                        && (squareType == Type.WOLF2 || squareType == Type.SHEEP1 || squareType == Type.WOLF1) )
+//                    return false;
+//                if (type == Type.WOLF2
+//                        && (squareType == Type.WOLF1 || squareType == Type.SHEEP2) )
+//                    return false;
+            }
 
 
             //check if a potential field is dangerous

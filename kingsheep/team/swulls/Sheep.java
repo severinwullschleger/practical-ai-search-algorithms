@@ -14,7 +14,7 @@ public class Sheep extends UzhShortNameCreature {
 //        if (type.equals(Type.SHEEP2))
 //            opponentWolf = Type.WOLF1;
 //        else
-            opponentWolf = Type.WOLF2;
+//            opponentWolf = Type.WOLF2;
     }
 
     @Override
@@ -44,8 +44,12 @@ public class Sheep extends UzhShortNameCreature {
         if (isCoordinateValid(map, y, x - 1)) surroundingSquares.add(map[y][x - 1]);
         if (isCoordinateValid(map, y, x + 1)) surroundingSquares.add(map[y][x + 1]);
 
-        if (surroundingSquares.contains(opponentWolf))
+        if (surroundingSquares.contains(Type.WOLF2))
             return false;
+
+//        for (Type t : surroundingSquares)
+//            if (t.equals(Type.WOLF2))
+//                return false;
 
 //        //handle bug if opponent wolf didnt move yet. (swap from P2 to P1)
 //        if (counter <= 2
