@@ -88,18 +88,18 @@ public abstract class UzhShortNameCreature extends Creature {
         private Move getMaximumValueMove() {
             int maxValue = 0;
             Move maxValueMove = null;
+//            HashSet<Move> maxValueMoves = new HashSet<Move>(5);
             for (Square s : squareQueue) {
                 int value = s.getValue();
                 if (maxValueMove == null || maxValue < value) {
                     maxValue = value;
                     maxValueMove = s.getFirstMoveFromPath();
+//                    maxValueMoves.add(maxValueMove);
                 }
             }
             if (maxValue == cutOffDepth * -1) {
                 List<String> objs = findObjectives();
-                if (objs.size() == 0)
-                    return maxValueMove;
-                else
+                if (objs.size() != 0)
                     return getMoveToFarAwayObjective();
             }
 
@@ -107,6 +107,7 @@ public abstract class UzhShortNameCreature extends Creature {
                 return Move.WAIT;
 
             return maxValueMove;
+//            return (Move)(maxValueMoves.toArray()[new Random().nextInt(maxValueMoves.size())]);
         }
 
         private Move getMoveToFarAwayObjective() {
