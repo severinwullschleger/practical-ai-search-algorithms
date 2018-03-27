@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Sheep extends SwullsCreature {
+public class Sheep extends UzhShortNameCreature {
 
     public Sheep(Type type, Simulator parent, int playerID, int x, int y) {
         super(type, parent, playerID, x, y);

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Wolf extends SwullsCreature {
+public class Wolf extends UzhShortNameCreature {
 
     public Wolf(Type type, Simulator parent, int playerID, int x, int y) {
         super(type, parent, playerID, x, y);

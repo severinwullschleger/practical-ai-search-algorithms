@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * Created by kama on 01.03.16.
  */
-public abstract class SwullsCreature extends Creature {
+public abstract class UzhShortNameCreature extends Creature {
 
     private HashMap<String, Square> visitedSquares;
     private ArrayList<Square> squareQueue;
@@ -22,7 +22,7 @@ public abstract class SwullsCreature extends Creature {
     protected boolean findingObjectiveMode;
 
 
-    public SwullsCreature(Type type, Simulator parent, int playerID, int x, int y) {
+    public UzhShortNameCreature(Type type, Simulator parent, int playerID, int x, int y) {
         super(type, parent, playerID, x, y);
     }
 
