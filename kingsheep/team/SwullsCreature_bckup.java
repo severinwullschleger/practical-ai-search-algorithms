@@ -1,4 +1,4 @@
-package kingsheep.team.swulls;
+package kingsheep.team;
 
 import kingsheep.Creature;
 import kingsheep.Simulator;
